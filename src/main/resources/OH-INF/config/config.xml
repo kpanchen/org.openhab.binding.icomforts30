@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="bridge-type:lennox:thermostat">
+		<parameter-group name="network">
+			<label>Network</label>
+			<description>Network settings.</description>
+		</parameter-group>
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<description>Connection settings.</description>
+		</parameter-group>
+		<parameter name="hostname" type="text" required="true" groupName="network">
+			<context>network-address</context>
+			<label>Hostname</label>
+			<description>Local Lennox S30 Hostname or IP Address.</description>
+		</parameter>
+		<parameter name="port" type="integer" required="false" min="1" max="65535" groupName="network">
+			<label>Port</label>
+			<default>443</default>
+			<description>Port of the Lennox Thermostat.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="protocol" type="text" groupName="network">
+			<label>Protocol</label>
+			<description>Protocol to connect to the Lennox Thermostat (http or https).</description>
+			<default>https</default>
+			<options>
+				<option value="http">HTTP</option>
+				<option value="https">HTTPS</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="useSelfSignedCertificate" type="boolean" groupName="network">
+			<label>Use Self-Signed Certificate</label>
+			<description>Use self-signed certificate for HTTPS connection to Lennox Thermostat.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" groupName="connection" min="15" required="false" unit="s">
+			<label>Refresh Interval</label>
+			<description>The interval in seconds for refreshing the data from Lennox S30 system</description>
+			<advanced>true</advanced>
+			<default>30</default>
+		</parameter>
+		<parameter name="initialRefreshDelay" type="integer" groupName="connection" min="15" required="false"
+			unit="s">
+			<label>Initial Refresh Delay </label>
+			<description>The interval in seconds for initial delay before startign refresh cycle, allow data to be processed from
+				Lennox S30 system</description>
+			<advanced>true</advanced>
+			<default>30</default>
+		</parameter>
+		<parameter name="pumpInterval" type="integer" groupName="connection" min="5" required="false" unit="s">
+			<label>Pump Interval</label>
+			<description>The interval in seconds for requesting the data from Lennox S30 system</description>
+			<advanced>true</advanced>
+			<default>5</default>
+		</parameter>
+		<parameter name="appID" type="text" groupName="connection">
+			<label>Application ID</label>
+			<description>Application ID used to connect to Lennox Thermostat, randomly generated at the first connection.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:lennox:zone">
+		<parameter name="id" type="integer" required="true" readOnly="false">
+			<label>ID</label>
+			<description>ID of the zone</description>
+		</parameter>
+		<parameter name="name" type="text" required="false" readOnly="true">
+			<label>Name</label>
+			<description>Name of the zone</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

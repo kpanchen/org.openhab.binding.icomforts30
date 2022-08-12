@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icomforts30"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Heating Zone Thing Type -->
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="thermostat"/>
+		</supported-bridge-type-refs>
+
+
+		<label>iComfort S30 Heating Zone</label>
+		<description>This represents the iComfort S30 Heating Zone.</description>
+
+		<channels>
+			<channel id="Temperature" typeId="temperature"/>
+			<channel id="Humidity" typeId="humidity"/>
+			<channel id="SystemStatus" typeId="systemStatus"/>
+			<channel id="OperationMode" typeId="operationMode"/>
+			<channel id="FanMode" typeId="fanMode"/>
+			<channel id="CoolSetPoint" typeId="coolSetPoint"/>
+			<channel id="HeatSetPoint" typeId="heatSetPoint"/>
+			<channel id="SetPoint" typeId="setPoint"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:lennox:zone"/>
+	</thing-type>
+
+	<!-- S30 System Thing Type -->
+	<thing-type id="system">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="thermostat"/>
+		</supported-bridge-type-refs>
+
+
+		<label>iComfort S30 System</label>
+		<description>This represents the iComfort S30 System.</description>
+
+		<channels>
+			<channel id="AwayMode" typeId="awayMode"/>
+		</channels>
+
+		<!-- <config-description-ref uri="thing-type:lennox:system"/> -->
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icomforts30"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Supported Lennox S30 Thermostat -->
+	<bridge-type id="thermostat">
+		<label>Lennox S30 Thermostat</label>
+		<description>Local Lennox S30 Thermostat</description>
+
+		<properties>
+			<property name="vendor">Lennox</property>
+			<property name="systemName"></property>
+			<property name="productType"></property>
+			<property name="language"></property>
+			<!-- <property name="gatewaySerialNumber"></property>
+				<property name="firmwareVersion"></property> -->
+		</properties>
+
+		<config-description-ref uri="bridge-type:lennox:thermostat"/>
+
+	</bridge-type>
+</thing:thing-descriptions>
