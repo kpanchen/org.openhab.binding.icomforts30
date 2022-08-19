@@ -162,6 +162,7 @@ public class iComfortS30SSLUtil {
 
             byte[] bytes = ((X509Certificate) certs[0]).getEncoded();
             if (bytes.length != 0) {
+                // Certificate obtained successfully
                 return BEGIN_CERT + "\r\n" + Base64.getEncoder().encodeToString(bytes) + "\r\n" + END_CERT;
             }
         } catch (NoSuchAlgorithmException | KeyManagementException | IOException e) {
@@ -171,6 +172,7 @@ public class iComfortS30SSLUtil {
                 connection.disconnect();
             }
         }
+        // Failed to obtain certificate
         return null;
     }
 }
