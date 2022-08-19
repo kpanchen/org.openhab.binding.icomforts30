@@ -37,6 +37,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.icomforts30.internal.exceptions.iComfortS30ConnectionFailedException;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
@@ -80,6 +81,9 @@ public class iComfortS30SSLUtil {
         String pemCert = null;
         try {
             pemCert = getPEMCertificateFromServer(new URL(iComfortLocalURL));
+            if (pemCert == null) {
+                throw new Exception("null cert returned");
+            }
         } catch (Exception e) {
             throw new iComfortS30ConnectionFailedException("Failed to get certificate from: " + iComfortLocalURL, e);
         }
@@ -143,7 +147,7 @@ public class iComfortS30SSLUtil {
         }
     }
 
-    private String getPEMCertificateFromServer(URL url) throws CertificateException {
+    private @Nullable String getPEMCertificateFromServer(URL url) throws CertificateException {
         HttpsURLConnection connection = null;
         try {
             TrustManager[] trustManagers = { TrustAllTrustManager.getInstance() };
