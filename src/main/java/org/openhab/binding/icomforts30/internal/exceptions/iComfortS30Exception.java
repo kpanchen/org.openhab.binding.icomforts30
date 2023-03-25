@@ -13,6 +13,7 @@
 
 package org.openhab.binding.icomforts30.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,14 +24,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @SuppressWarnings("serial")
 @NonNullByDefault
 public class iComfortS30Exception extends Exception {
+
+    private static final long serialVersionUID = 3331L;
+
+    private final String errorMessage;
+
     public iComfortS30Exception() {
+        super();
+        this.errorMessage = "";
     }
 
     public iComfortS30Exception(String message) {
         super(message);
+        this.errorMessage = message;
     }
 
-    public iComfortS30Exception(String message, Throwable e) {
-        super(message, e);
+    public iComfortS30Exception(String message, Throwable ex) {
+        super(message, ex);
+        this.errorMessage = message;
+    }
+
+    @Override
+    public @NonNull String getMessage() {
+
+        return errorMessage;
     }
 }

@@ -25,8 +25,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -48,12 +50,13 @@ import com.google.gson.GsonBuilder;
  *
  */
 
+@NonNullByDefault
 public class ApiAccess {
     private static final int REQUEST_TIMEOUT_MILLISECONDS = 5000;
     private int RequestTimeoutInMilliseconds = REQUEST_TIMEOUT_MILLISECONDS;
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
     private final HttpClient httpClient;
-    private String userCredentials = null;
+    private @Nullable String userCredentials = null;
     private final Gson gson;
     // May need to update as the version of API increases
     private final String USER_AGENT = "lx_ic3_mobile_appstore/3.75.218 (iPad; iOS 14.4.1; Scale/2.00)";
@@ -63,12 +66,17 @@ public class ApiAccess {
         gsonBuilder.registerTypeAdapter(Date.class, new GsonDateDeserializer());
         gsonBuilder.registerTypeAdapter(Integer.class, new GsonIntegerDeserializer());
         gsonBuilder.registerTypeAdapter(Duration.class, new GsonDurationDeserializer());
+        gsonBuilder.serializeNulls(); // To accomodate null values
         this.gson = gsonBuilder.create();
         this.httpClient = httpClient;
     }
 
-    public void setUserCredentials(String userCredentials) {
+    public void setUserCredentials(@Nullable String userCredentials) {
         this.userCredentials = userCredentials;
+    }
+
+    public @Nullable String getUserCredentials() {
+        return userCredentials;
     }
 
     /**
@@ -91,8 +99,8 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            String requestData, String contentType, Class<TOut> outClass) throws TimeoutException {
+    public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, @Nullable Map<String, String> headers,
+            @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
 
         @Nullable
         TOut retVal = null;
@@ -138,8 +146,10 @@ public class ApiAccess {
                     retVal = this.gson.fromJson(response.getContentAsString(), outClass);
                 }
             }
-        } catch (InterruptedException | ExecutionException e) {
-            logger.debug("Error in handling request: {}", e);
+        } catch (HttpResponseException ex) {
+            logger.debug("Error in handling request: {}, \nserver response was: {}", requestData, ex.getResponse());
+        } catch (InterruptedException | ExecutionException ex) {
+            logger.debug("Error in handling request: {}, \nexception was: {}", requestData, ex);
         }
 
         return retVal;
@@ -167,8 +177,8 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doAuthenticatedGet(String url, String loginBearerToken, Object requestContainer,
-            Class<TOut> outClass) throws TimeoutException {
+    public @Nullable <TOut> TOut doAuthenticatedGet(String url, @Nullable String loginBearerToken,
+            Object requestContainer, Class<TOut> outClass) throws TimeoutException {
         return doRequest(HttpMethod.GET, url, getHeaders(loginBearerToken), requestContainer, outClass);
     }
 
@@ -208,8 +218,8 @@ public class ApiAccess {
      * @param outClass The type of the requested result
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doAuthenticatedPost(String url, String loginBearerToken, Object requestContainer,
-            Class<TOut> outClass) throws TimeoutException {
+    public @Nullable <TOut> TOut doAuthenticatedPost(String url, @Nullable String loginBearerToken,
+            Object requestContainer, Class<TOut> outClass) throws TimeoutException {
         return doRequest(HttpMethod.POST, url, getHeaders(loginBearerToken), requestContainer, outClass);
     }
 
@@ -222,8 +232,8 @@ public class ApiAccess {
      * @param outClass The type of the requested result
      * @throws TimeoutException Thrown when a request times out
      */
-    public @Nullable <TOut> TOut doUnAuthenticatedPost(String url, Object requestContainer, Class<TOut> outClass)
-            throws TimeoutException {
+    public @Nullable <TOut> TOut doUnAuthenticatedPost(String url, @Nullable Object requestContainer,
+            Class<TOut> outClass) throws TimeoutException {
         return doRequest(HttpMethod.POST, url, null, requestContainer, outClass);
     }
 
@@ -239,13 +249,13 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    private @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
-            Class<TOut> outClass) throws TimeoutException {
+    private @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,
+            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
         Map<String, String> headers = null;
-        if (userCredentials != null) {
+        String lUserCredentials = userCredentials;
+        if (lUserCredentials != null) {
             headers = new HashMap<String, String>();
-
-            headers.put("Authorization", userCredentials);
+            headers.put("Authorization", lUserCredentials);
             headers.put("Accept",
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
             headers.put("Accept-Charset", "utf-8");
@@ -266,8 +276,8 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            Object requestContainer, Class<TOut> outClass) throws TimeoutException {
+    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, @Nullable Map<String, String> headers,
+            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
 
         String json = null;
         if (requestContainer != null) {
@@ -277,7 +287,7 @@ public class ApiAccess {
         return doRequest(method, url, headers, json, "application/json", outClass);
     }
 
-    private Map<String, String> getHeaders(String loginBearerToken) {
+    private Map<String, String> getHeaders(@Nullable String loginBearerToken) {
         Map<String, String> headers = new HashMap<>();
 
         if (loginBearerToken != null) {

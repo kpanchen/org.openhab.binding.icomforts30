@@ -15,6 +15,8 @@ package org.openhab.binding.icomforts30.internal.api.models.response;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -27,34 +29,53 @@ import com.google.gson.annotations.SerializedName;
 public class Data {
 
     @SerializedName("interfaces")
-    public ArrayList<InterfaceList> interfaces;
+    private ArrayList<InterfaceList> interfaces;
 
     @SerializedName("system")
-    public System system;
+    private System system;
 
     @SerializedName("zones")
-    public ArrayList<ZoneList> zones;
+    private ArrayList<ZoneList> zones;
 
     @SerializedName("devices")
-    public ArrayList<DeviceList> devices;
+    private ArrayList<DeviceList> devices;
 
     @SerializedName("equipments")
-    public ArrayList<EquipmentList> equipments;
+    private ArrayList<EquipmentList> equipments;
 
     @SerializedName("schedules")
-    public ArrayList<ScheduleList> schedules;
+    private ArrayList<ScheduleList> schedules;
 
     @SerializedName("logs")
-    public Log logs;
+    private Log logs;
 
     @SerializedName("occupancy")
-    public Occupancy occupancy;
+    private Occupancy occupancy;
+
+    @SerializedName("rgw")
+    private Rgw rgw;
+
+    @SerializedName("fwm")
+    private Fwm fwm;
+
+    @SerializedName("alerts")
+    private Alerts alerts;
+
+    @SerializedName("siblings")
+    public ArrayList<SiblingList> siblings;
+
+    @SerializedName("homes")
+    public ArrayList<HomeList> homes;
 
     public Data() {
     }
 
     public Occupancy getOccupancy() {
         return this.occupancy;
+    }
+
+    public Fwm getFirmware() {
+        return this.fwm;
     }
 
     public Log getLogs() {
@@ -65,28 +86,54 @@ public class Data {
         return this.logs;
     }
 
+    public void setAlerts(Alerts alerts) {
+        this.alerts = alerts;
+    }
+
+    public Alerts getAlerts() {
+        return this.alerts;
+    }
+
     public ArrayList<ScheduleList> getSchedules() {
         return this.schedules;
     }
 
-    public ScheduleList getSchedule(Integer iD) {
-        return this.schedules.get(iD);
+    public @Nullable ScheduleList getSchedule(Integer iD) {
+        for (ScheduleList scheduleElement : schedules) {
+            if (scheduleElement.getId() == iD) {
+                return scheduleElement;
+            }
+
+        }
+        return null;
     }
 
     public ArrayList<EquipmentList> getEquipments() {
         return this.equipments;
     }
 
-    public EquipmentList getEquipment(Integer iD) {
-        return this.equipments.get(iD);
+    public @Nullable EquipmentList getEquipment(Integer iD) {
+        for (EquipmentList equipmentElement : equipments) {
+            if (equipmentElement.getId() == iD) {
+                return equipmentElement;
+            }
+
+        }
+        return null;
     }
 
     public ArrayList<InterfaceList> getInterfaces() {
         return this.interfaces;
     }
 
-    public InterfaceList getInterface(Integer iD) {
-        return this.interfaces.get(iD);
+    public @Nullable InterfaceList getInterface(Integer iD) {
+        for (InterfaceList interfaceElement : interfaces) {
+            if (interfaceElement.getId() == iD) {
+                return interfaceElement;
+            }
+
+        }
+        return null;
     }
 
     public Integer getNumberOfInterfaces() {
@@ -101,8 +148,14 @@ public class Data {
         return this.zones;
     }
 
-    public ZoneList getZone(Integer iD) {
-        return this.zones.get(iD);
+    public @Nullable ZoneList getZone(Integer iD) {
+        for (ZoneList zoneElement : zones) {
+            if (zoneElement.getId() == iD) {
+                return zoneElement;
+            }
+
+        }
+        return null;
     }
 
     public Integer getNumberOfZones() {
@@ -113,11 +166,39 @@ public class Data {
         return this.devices;
     }
 
-    public DeviceList getDevice(Integer iD) {
-        return this.devices.get(iD);
+    public @Nullable DeviceList getDevice(Integer iD) {
+        for (DeviceList deviceElement : devices) {
+            if (deviceElement.getId() == iD) {
+                return deviceElement;
+            }
+
+        }
+        return null;
     }
 
     public Integer getNumberOfDevices() {
         return this.devices.size();
+    }
+
+    public Rgw getRgw() {
+        return this.rgw;
+    }
+
+    public ArrayList<SiblingList> getSiblings() {
+        return this.siblings;
+    }
+
+    public @Nullable SiblingList getSibling(Integer iD) {
+        for (SiblingList siblingElement : siblings) {
+            if (siblingElement.getId() == iD) {
+                return siblingElement;
+            }
+
+        }
+        return null;
+    }
+
+    public Integer getNumberOfSiblings() {
+        return this.siblings.size();
     }
 }

@@ -63,6 +63,14 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="outsideTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<description>Gets outside temprature from the system.</description>
+		<category>Temperature</category>
+		<state step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="fanMode">
 		<item-type>String</item-type>
 		<label>Fan Mode Status</label>
@@ -99,6 +107,35 @@
 		<description>Gets or sets the heat or cool set point of this zone automatically.</description>
 		<category>Temperature</category>
 		<state step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="humidityStatus">
+		<item-type>String</item-type>
+		<label>Humidity Status</label>
+		<description>Current humidity status</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="HUMID_DEHUMID">System is dehumidifying</option>
+				<option value="HUMID_HUMID">System is humidifying</option>
+				<option value="HUMID_WAITING">System is waiting</option>
+				<option value="OFF">System is idle</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="humidityMode">
+		<item-type>String</item-type>
+		<label>Humidity Mode</label>
+		<description>Current humidity mode</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="HUMID_DEHUMID">System is in dehumidify mode</option>
+				<option value="HUMID_HUMID">System is in humidify mode</option>
+				<option value="HUMID_OFF">System is off</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

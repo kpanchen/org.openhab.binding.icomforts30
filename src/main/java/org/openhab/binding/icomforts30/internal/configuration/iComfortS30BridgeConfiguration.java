@@ -28,6 +28,8 @@ public class iComfortS30BridgeConfiguration {
     private static final Integer DEFAULT_REFRESH = 30;
     private static final Integer DEFAULT_DELAY = 30;
     private static final Integer DEFAULT_PUMP = 5;
+    private static final Integer DEFAULT_PUMP_CRITICAL = 5;
+    private static final Integer NUMBER_LOGON_ATTEMPTS = 10;
     public static final String HTTP = "http";
     public static final String HTTPS = "https";
 
@@ -58,6 +60,8 @@ public class iComfortS30BridgeConfiguration {
     private Integer refreshInterval = DEFAULT_REFRESH;
     private Integer initialRefreshDelay = DEFAULT_DELAY;
     private Integer pumpInterval = DEFAULT_PUMP;
+    private Integer pumpCritical = DEFAULT_PUMP_CRITICAL;
+    private Integer numberLogonAttempts = NUMBER_LOGON_ATTEMPTS;
 
     private String appID = "";
 
@@ -77,7 +81,7 @@ public class iComfortS30BridgeConfiguration {
         this.hostname = hostname;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         Integer thePort = port;
         return (thePort != null) ? thePort.intValue() : HTTPS.equals(protocol) ? 443 : 80;
     }
@@ -94,7 +98,7 @@ public class iComfortS30BridgeConfiguration {
         this.protocol = protocol;
     }
 
-    public int getPollingInterval() {
+    public Integer getPollingInterval() {
         return refreshInterval;
     }
 
@@ -102,7 +106,7 @@ public class iComfortS30BridgeConfiguration {
         this.refreshInterval = pollingInterval;
     }
 
-    public int getRefreshDelay() {
+    public Integer getRefreshDelay() {
         return initialRefreshDelay;
     }
 
@@ -110,12 +114,28 @@ public class iComfortS30BridgeConfiguration {
         this.initialRefreshDelay = delayInterval;
     }
 
-    public int getPumpInterval() {
+    public Integer getNumberLogonAttempts() {
+        return numberLogonAttempts;
+    }
+
+    public void setNumberLogonAttempts(int logonAttempts) {
+        this.numberLogonAttempts = logonAttempts;
+    }
+
+    public Integer getPumpInterval() {
         return pumpInterval;
     }
 
     public void setPumpInterval(int pumpInterval) {
         this.pumpInterval = pumpInterval;
+    }
+
+    public Integer getPumpCritical() {
+        return pumpCritical;
+    }
+
+    public void setPumpCritical(int pumpCritical) {
+        this.pumpCritical = pumpCritical;
     }
 
     public Boolean getUseSelfSignedCertificate() {

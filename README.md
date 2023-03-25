@@ -5,6 +5,7 @@ _This is an OpenHAB 3 Binding for Lennox iComfort S30/E30/M30 system / thermosta
 ## Supported Things
 
 This binding supports two things:<br />
+
 1. Thermostat system (currently under development, only System Away Channels currently supported for the thing)<br />
 2. Heating / Cooling Zone (4 zones supported).
 
@@ -58,13 +59,16 @@ Thing zone s30_zone_0 "iComfort S30 Heating Zone 0" @ "Demo location" [ id = 0, 
 System thing:
 
 AwayMode - Current away status (Read / Write)<br />
+OutsideTemperature - Current outside temperature (From sensor or internet, Read Only)<br />
 
 Zone thing:
 
 Temperature - Current zone temperature (Read Only)<br />
 Humidity - Current zone humidity (Read Only)<br />
 SystemStatus - Current system status (Read Only)<br />
+HumidityStatus - Current humidity status (Read Only)<br />
 OperationMode - Current operation mode (Read / Write)<br />
+HumidityMode - Current humidity mode (Read / Write)<br />
 FanMode - Current fan mode (Read / Write)<br />
 CoolSetPoint - Cool set point for the zone (Read / Write)<br />
 HeatSetPoint - Heat set point for the zone (Read / Write)<br />
@@ -90,6 +94,8 @@ Number:Temperature iComfortS30HeatingZone_0_Temperature "Temperature [%.1f %unit
 Number:Dimensionless iComfortS30HeatingZone_0_Humidity "Humidity [%d %unit%]" <humidity> (gWholeHouse, gHumiditySensors) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:Humidity"}
 String iComfortS30HeatingZone_0_SystemStatus "System Status [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:SystemStatus"}
 String iComfortS30HeatingZone_0_OperationMode "Operation Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:OperationMode"}
+String iComfortS30HeatingZone_0_HumidityStatus "Humidity Status [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HumidityStatus"}
+String iComfortS30HeatingZone_0_HumididtyMode "Humidity Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HumidityMode"}
 String iComfortS30HeatingZone_0_FanModeStatus "Fan Mode [%s]" <fan> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:FanMode"}
 Number:Temperature iComfortS30HeatingZone_0_CoolSetPoint "Cool Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:CoolSetPoint"}
 Number:Temperature iComfortS30HeatingZone_0_HeatSetPoint "Heat Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HeatSetPoint"}
@@ -98,6 +104,7 @@ Number:Temperature iComfortS30HeatingZone_0_HeatSetPoint "Heat Set Point [%.1f %
 ```
 //System items:
 String iComfortS30System_AwayModeStatus "Away Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:system:knplennoxs30:s30_system:AwayMode"}
+Number:Temperature iComfortS30System_Outside_Temperature "Outside Temperature [%.1f %unit%]" <temperature> (gWholeHouse, gTemperatureSensors) {channel="icomforts30:system:knplennoxs30:s30_system:OutsideTemperature"}
 ```
 
 Sitemap example:
@@ -106,8 +113,10 @@ Sitemap example:
 Text item=iComfortS30HeatingZone_0_Temperature
 Text item=iComfortS30HeatingZone_0_Humidity
 Text item=iComfortS30HeatingZone_0_SystemStatus
-Selection  item=iComfortS30HeatingZone_0_OperationMode mappings=[HVAC_OFF=System is idle", HVAC_HEAT="System is heating", HVAC_COOL="System is cooling", WAITING="System is waiting", HVAC_EMERGENCY_HEAT="System is emergency heating", HVAC_HEAT_COOL="System is heating or cooling"]
-Switch item=Thermostat_Away_Mode mappings=[AWAY_ON="Away", AWAY_OFF="Not Away"]
+Text item=iComfortS30HeatingZone_0_HumidityStatus
+Selection  item=iComfortS30HeatingZone_0_OperationMode mappings=[HVAC_OFF=System is idle", HVAC_HEAT="System is heating", HVAC_COOL="System is cooling", HVAC_EMERGENCY_HEAT="System is emergency heating", HVAC_HEAT_COOL="System is heating or cooling"]
+Selection  item=iComfortS30HeatingZone_0_HumididtyMode
+Switch item=Thermostat_Away_Mode mappings=[AWAY="Away", HOME="Home"]
 Selection  item=Thermostat_Fan_Mode mappings=[FAN_AUTO="Auto", FAN_ON="On", FAN_CIRCULATE="Circulate"]
 Setpoint item=Thermostat_Cool_Point
 Setpoint item=Thermostat_Heat_Point

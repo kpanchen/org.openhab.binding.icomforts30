@@ -21,9 +21,10 @@ package org.openhab.binding.icomforts30.internal.exceptions;
  */
 public class iComfortS30ApiClientException extends Exception {
 
-    private static final long serialVersionUID = 9991L;
+    private static final long serialVersionUID = 1111L;
 
     public iComfortS30ApiClientException() {
+        super();
     }
 
     public iComfortS30ApiClientException(String message) {

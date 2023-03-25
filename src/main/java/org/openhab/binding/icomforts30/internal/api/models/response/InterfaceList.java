@@ -139,7 +139,15 @@ public class InterfaceList {
     }
 
     @SerializedName("id")
-    public Integer id;
+    private Integer id;
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public InterfaceList() {
     }

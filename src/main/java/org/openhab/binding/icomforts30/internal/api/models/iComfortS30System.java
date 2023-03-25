@@ -15,11 +15,15 @@ package org.openhab.binding.icomforts30.internal.api.models;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.icomforts30.internal.api.models.response.Alerts;
 import org.openhab.binding.icomforts30.internal.api.models.response.DeviceList;
 import org.openhab.binding.icomforts30.internal.api.models.response.EquipmentList;
+import org.openhab.binding.icomforts30.internal.api.models.response.Fwm;
 import org.openhab.binding.icomforts30.internal.api.models.response.InterfaceList;
 import org.openhab.binding.icomforts30.internal.api.models.response.Log;
 import org.openhab.binding.icomforts30.internal.api.models.response.Occupancy;
+import org.openhab.binding.icomforts30.internal.api.models.response.Rgw;
 import org.openhab.binding.icomforts30.internal.api.models.response.ScheduleList;
 import org.openhab.binding.icomforts30.internal.api.models.response.System;
 import org.openhab.binding.icomforts30.internal.api.models.response.ZoneList;
@@ -42,6 +46,9 @@ public class iComfortS30System {
     private ArrayList<ScheduleList> schedules = new ArrayList<ScheduleList>();
     private Log logs = new Log();
     private Occupancy occupancy = new Occupancy();
+    private Rgw rgw = new Rgw();
+    private Fwm firmware = new Fwm();
+    private Alerts alerts = new Alerts();
 
     public void setOccupancy(Occupancy occupancy) {
         this.occupancy = occupancy;
@@ -49,6 +56,30 @@ public class iComfortS30System {
 
     public Occupancy getOccupancy() {
         return this.occupancy;
+    }
+
+    public void setRgw(Rgw rgw) {
+        this.rgw = rgw;
+    }
+
+    public Rgw getRgw() {
+        return this.rgw;
+    }
+
+    public void setAlerts(Alerts alerts) {
+        this.alerts = alerts;
+    }
+
+    public Alerts getAlerts() {
+        return this.alerts;
+    }
+
+    public void setFirmware(Fwm firmware) {
+        this.firmware = firmware;
+    }
+
+    public Fwm getFirmware() {
+        return this.firmware;
     }
 
     public void setLogs(Log logs) {
@@ -115,9 +146,7 @@ public class iComfortS30System {
         }
     }
 
-    // redo!
-    public ZoneList getZone(Integer iD) {
-        // return this.zones.get(iD);
+    public @Nullable ZoneList getZone(Integer iD) {
         for (ZoneList zl : zones) {
             if (zl.getId() == iD) {
                 return zl;

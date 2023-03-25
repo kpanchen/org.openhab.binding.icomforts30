@@ -27,7 +27,15 @@ import com.google.gson.annotations.SerializedName;
 public class ScheduleList {
 
     @SerializedName("id")
-    public Integer id;
+    private Integer id;
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     @SerializedName("writeAccess")
     public WriteAccess writeAccess;

@@ -23,6 +23,8 @@
 			<channel id="CoolSetPoint" typeId="coolSetPoint"/>
 			<channel id="HeatSetPoint" typeId="heatSetPoint"/>
 			<channel id="SetPoint" typeId="setPoint"/>
+			<channel id="HumidityStatus" typeId="humidityStatus"/>
+			<channel id="HumidityMode" typeId="humidityMode"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:lennox:zone"/>
@@ -40,6 +42,7 @@
 
 		<channels>
 			<channel id="AwayMode" typeId="awayMode"/>
+			<channel id="OutsideTemperature" typeId="outsideTemperature"/>
 		</channels>
 
 		<!-- <config-description-ref uri="thing-type:lennox:system"/> -->

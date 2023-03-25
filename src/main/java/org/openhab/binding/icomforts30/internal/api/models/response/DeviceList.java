@@ -38,7 +38,15 @@ public class DeviceList {
     public DeviceStatus device;
 
     @SerializedName("id")
-    public Integer id;
+    private Integer id;
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     @SerializedName("publisher")
     public Publisher publisher;

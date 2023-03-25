@@ -25,6 +25,7 @@ import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.Ou
 import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.PeriodExceptionType;
 import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.PeriodExpirationMode;
 import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.TemperatureUnit;
+import org.openhab.binding.icomforts30.internal.api.models.response.PeriodList;
 import org.openhab.binding.icomforts30.internal.api.models.response.System;
 import org.openhab.binding.icomforts30.internal.api.models.response.ZoneList;
 import org.openhab.binding.icomforts30.internal.iComfortS30BindingConstants;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Panchenko - Initial contribution
  */
+
 public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
 
     private final Logger logger = LoggerFactory.getLogger(iComfortS30HeatingZoneHandler.class);
@@ -97,12 +99,16 @@ public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
                 new StringType(heatingZone.getStatus().period.systemMode.toString()));
         updateState(iComfortS30BindingConstants.ZONE_FAN_MODE_CHANNEL,
                 new StringType(heatingZone.getStatus().period.fanMode.toString()));
+        updateState(iComfortS30BindingConstants.ZONE_HUMIDITY_STATUS_CHANNEL,
+                new StringType(heatingZone.getStatus().humOperation.toString()));
+        updateState(iComfortS30BindingConstants.ZONE_HUMIDITY_MODE_CHANNEL,
+                new StringType(heatingZone.getStatus().period.humidityMode.toString()));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("Entering Heating Zone Handler for zone {}", heatingZone.id);
+        logger.debug("Entering Heating Zone Handler for zone {}", heatingZone.getId());
         logger.debug("Executing command {}", command.toString());
 
         if (command == RefreshType.REFRESH) {
@@ -112,26 +118,28 @@ public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
             String channelId = channelUID.getId();
             // ToDo
             if (iComfortS30BindingConstants.ZONE_OPERATION_MODE_CHANNEL.equals(channelId)) {
-                if (command.toString() == HVACMode.HVAC_COOL.toString() && heatingZone.config.coolingOption == false) {
+                if (command.toString() == HVACMode.HVAC_COOL.toString()
+                        && heatingZone.getConfig().coolingOption == false) {
                     logger.warn("Operation mode {} is not available for zone {}", command.toString(),
-                            heatingZone.config.name);
+                            heatingZone.getConfig().name);
                     return;
                 } else if (command.toString() == HVACMode.HVAC_HEAT.toString()
-                        && heatingZone.config.heatingOption == false) {
+                        && heatingZone.getConfig().heatingOption == false) {
 
                     logger.warn("Operation mode {} is not available for zone {}", command.toString(),
-                            heatingZone.config.name);
+                            heatingZone.getConfig().name);
                     return;
                 } else if (command.toString() == HVACMode.HVAC_HEAT_COOL.toString()
-                        && (heatingZone.config.heatingOption == false || heatingZone.config.coolingOption == false)) {
+                        && (heatingZone.getConfig().heatingOption == false
+                                || heatingZone.getConfig().coolingOption == false)) {
                     logger.warn("Operation mode {} is not available for zone {}", command.toString(),
-                            heatingZone.config.name);
+                            heatingZone.getConfig().name);
                     return;
 
                 } else if (command.toString() == HVACMode.HVAC_EMERGENCY_HEAT.toString()
-                        && (heatingZone.config.heatingOption == false || hasEmergencyHeat() == false)) {
+                        && (heatingZone.getConfig().heatingOption == false || hasEmergencyHeat() == false)) {
                     logger.warn("Operation mode {} is not available for zone {}", command.toString(),
-                            heatingZone.config.name);
+                            heatingZone.getConfig().name);
                     return;
                 }
                 if (isZoneManualMode() == false) {
@@ -145,6 +153,24 @@ public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
                     bridge.setZoneFanMode(heatingZone, CustomTypes.FANMode.valueOf(command.toString()),
                             getManualModeScheduleId());
                 }
+
+            } else if (iComfortS30BindingConstants.ZONE_HUMIDITY_MODE_CHANNEL.equals(channelId)) {
+                if (command.toString() == HUMIDMode.HUMID_HUMID.toString()
+                        && heatingZone.getConfig().humidificationOption == false) {
+                    logger.warn("Humidification mode {} is not available for zone {}", command.toString(),
+                            heatingZone.getConfig().name);
+                    return;
+
+                } else if (command.toString() == HUMIDMode.HUMID_DEHUMID.toString()
+                        && heatingZone.getConfig().dehumidificationOption == false) {
+                    logger.warn("Dehumidification mode {} is not available for zone {}", command.toString(),
+                            heatingZone.getConfig().name);
+                    return;
+
+                }
+
+                bridge.setZoneHumidificationMode(heatingZone, CustomTypes.HUMIDMode.valueOf(command.toString()),
+                        getManualModeScheduleId());
 
                 // ToDo
                 // If not in manual mode set to override mode
@@ -242,54 +268,58 @@ public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
     private void performSetPoints(Integer hspF, Float cspC, Float hspC, Integer cspF, Integer spF, Float spC,
             Integer husp, Integer desp) {
 
-        if (hspF == null) {
-            hspF = heatingZone.getSchedule().periods.get(0).period.hspF;
-        }
-        if (cspC == null) {
-            cspC = heatingZone.getSchedule().periods.get(0).period.cspC;
-        }
-        if (hspC == null) {
-            hspC = heatingZone.getSchedule().periods.get(0).period.hspC;
-        }
-        if (cspF == null) {
-            cspF = heatingZone.getSchedule().periods.get(0).period.cspF;
-        }
-        if (spF == null) {
-            spF = heatingZone.getSchedule().periods.get(0).period.spF;
-        }
-        if (spC == null) {
-            spC = heatingZone.getSchedule().periods.get(0).period.spC;
-        }
-        if (husp == null) {
-            husp = heatingZone.getSchedule().periods.get(0).period.husp;
-        }
-        if (desp == null) {
-            desp = heatingZone.getSchedule().periods.get(0).period.desp;
-        }
+        PeriodList periodList = heatingZone.getSchedule().getPeriod(0);
+        if (periodList != null) {
 
-        if (isZoneManualMode() == true) {
-            logger.debug("Zone {} already in Manual Mode, setting Set Points", heatingZone.getId());
-            getiComfortS30Bridge().setSchedulePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp, desp,
-                    getManualModeScheduleId());
+            if (hspF == null) {
+                hspF = periodList.period.hspF;
+            }
+            if (cspC == null) {
+                cspC = periodList.period.cspC;
+            }
+            if (hspC == null) {
+                hspC = periodList.period.hspC;
+            }
+            if (cspF == null) {
+                cspF = periodList.period.cspF;
+            }
+            if (spF == null) {
+                spF = periodList.period.spF;
+            }
+            if (spC == null) {
+                spC = periodList.period.spC;
+            }
+            if (husp == null) {
+                husp = periodList.period.husp;
+            }
+            if (desp == null) {
+                desp = periodList.period.desp;
+            }
 
-        } else if (isZoneOveride() == true) {
-            logger.debug("Zone {} already in Override Mode, setting Set Points", heatingZone.getId());
-            getiComfortS30Bridge().setSchedulePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp, desp,
-                    getOverrideScheduleId());
-        } else {
-            logger.debug("Zone {} is following the schedule, setting Override schedule", heatingZone.getId());
-            HUMIDMode humidityMode = heatingZone.getSchedule().periods.get(0).period.humidityMode;
-            HVACMode systemMode = heatingZone.getSchedule().periods.get(0).period.systemMode;
-            Integer startTime = heatingZone.getSchedule().periods.get(0).period.startTime;
-            FANMode fanMode = heatingZone.getSchedule().periods.get(0).period.fanMode;
+            if (isZoneManualMode() == true) {
+                logger.debug("Zone {} already in Manual Mode, setting Set Points", heatingZone.getId());
+                getiComfortS30Bridge().setSchedulePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp, desp,
+                        getManualModeScheduleId());
 
-            // ToDo
-            // Possible error handling
-            getiComfortS30Bridge().setScheduleOverridePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp, desp,
-                    humidityMode, systemMode, startTime, fanMode, getOverrideScheduleId());
-            // Possible error handling
-            getiComfortS30Bridge().setScheduleHold(heatingZone, PeriodExceptionType.HOLD, true, "0",
-                    PeriodExpirationMode.NEXTPERIOD, getOverrideScheduleId());
+            } else if (isZoneOveride() == true) {
+                logger.debug("Zone {} already in Override Mode, setting Set Points", heatingZone.getId());
+                getiComfortS30Bridge().setSchedulePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp, desp,
+                        getOverrideScheduleId());
+            } else {
+                logger.debug("Zone {} is following the schedule, setting Override schedule", heatingZone.getId());
+                HUMIDMode humidityMode = periodList.period.humidityMode;
+                HVACMode systemMode = periodList.period.systemMode;
+                Integer startTime = periodList.period.startTime;
+                FANMode fanMode = periodList.period.fanMode;
+
+                // ToDo
+                // Possible error handling
+                getiComfortS30Bridge().setScheduleOverridePeriod(heatingZone, hspF, cspC, hspC, cspF, spF, spC, husp,
+                        desp, humidityMode, systemMode, startTime, fanMode, getOverrideScheduleId());
+                // Possible error handling
+                getiComfortS30Bridge().setScheduleHold(heatingZone, PeriodExceptionType.HOLD, true, "0",
+                        PeriodExpirationMode.NEXTPERIOD, getOverrideScheduleId());
+            }
         }
     }
 
@@ -305,11 +335,11 @@ public class iComfortS30HeatingZoneHandler extends BaseiComfortS30Handler {
     }
 
     private Integer getManualModeScheduleId() {
-        return 16 + heatingZone.id;
+        return 16 + heatingZone.getId();
     }
 
     private Integer getOverrideScheduleId() {
-        return 32 + heatingZone.id;
+        return 32 + heatingZone.getId();
     }
 
     private Boolean isZoneManualMode() {

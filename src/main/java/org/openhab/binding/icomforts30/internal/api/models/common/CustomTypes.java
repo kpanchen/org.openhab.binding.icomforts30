@@ -96,11 +96,21 @@ public class CustomTypes {
     // zones[].status.period.humidityMode
     public enum HUMIDMode {
         @SerializedName("dehumidify")
-        HUMID_DEHUMID,
+        HUMID_DEHUMID("dehumidify"),
         @SerializedName("humidify")
-        HUMID_HUMID,
+        HUMID_HUMID("humidify"),
         @SerializedName("off")
-        HUMID_OFF;
+        HUMID_OFF("off");
+
+        private String humidModeValue;
+
+        private HUMIDMode(String humidModeValue) {
+            this.humidModeValue = humidModeValue;
+        }
+
+        public String getHumidModeValue() {
+            return this.humidModeValue;
+        }
     }
 
     // system.config.humidificationMode
@@ -225,7 +235,9 @@ public class CustomTypes {
 
     // system.clock.tz
     public enum ClockTimezone {
-        @SerializedName("atlantic") // guessed
+        @SerializedName("newfoundland")
+        NEWFOUNDLAND,
+        @SerializedName("atlantic")
         ATLANTIC,
         @SerializedName("eastern")
         EASTERN,
@@ -233,9 +245,51 @@ public class CustomTypes {
         CENTRAL,
         @SerializedName("mountain")
         MONUNTAIN,
-        @SerializedName("pacific") // guessed
+        @SerializedName("pacific")
         PACIFIC,
+        @SerializedName("alaska")
+        ALASKA,
+        @SerializedName("hawaii")
+        HAWAII,
+        @SerializedName("samoa")
+        SAMOA,
+        @SerializedName("chamorro")
+        CHAMORRO,
+        @SerializedName("mawson station")
+        MAWSON_STATION,
+        @SerializedName("christmas island")
+        CHRISTMAS_ISLAND,
+        @SerializedName("australia central")
+        AUSTRALIA_CENTRAL,
+        @SerializedName("heard and mcdonald island")
+        HEARD_AND_MCDONALD_ISLAND,
+        @SerializedName("australia western")
+        AUSTRALIA_WESTERN,
+        @SerializedName("australia eastern")
+        AUSTRALIA_EASTERN,
+        @SerializedName("cocos islands")
+        COCOS_ISLANDS,
+        @SerializedName("casey")
+        CASEY,
+        @SerializedName("lord howe")
+        LORD_HOWE,
+        @SerializedName("davis")
+        DAVIS,
+        @SerializedName("central western")
+        CENTRAL_WESTERN,
+        @SerializedName("norfolk")
+        NORFOLK,
         UNKNOWN;
+    }
+
+    // home.address.country
+    public enum CountryAbbreviation {
+        @SerializedName("US")
+        US,
+        @SerializedName("CA")
+        CA,
+        @SerializedName("AU")
+        AU;
     }
 
     // system.clock.format
@@ -281,7 +335,21 @@ public class CustomTypes {
         @SerializedName("not_exist")
         NOT_EXIST,
         @SerializedName("not_available")
-        NOT_AVAILABLE;
+        NOT_AVAILABLE,
+        @SerializedName("error")
+        ERROR;
+    }
+
+    // system.status.alert
+    public enum Alert {
+        @SerializedName("critical")
+        CRITICAL,
+        @SerializedName("moderate")
+        MODERATE,
+        @SerializedName("minor")
+        MINOR,
+        @SerializedName("none")
+        NONE;
     }
 
     public enum State {
@@ -358,6 +426,55 @@ public class CustomTypes {
     public enum PeriodExceptionType {
         @SerializedName("hold")
         HOLD,
+        UNKNOWN;
+    }
+
+    // Other values are not known
+    public enum DeviceType {
+        @SerializedName("system")
+        SYSTEM,
+        @SerializedName("tstat")
+        TSTAT,
+        UNKNOWN;
+    }
+
+    // Other values are not known
+    public enum DealerPermissionToUpdate {
+        @SerializedName("always")
+        ALWAYS,
+        @SerializedName("none")
+        NONE,
+        UNKNOWN;
+    }
+
+    // alerts.active.alert.action
+    public enum AlertAction {
+        @SerializedName("clear")
+        CLEAR,
+        @SerializedName("set")
+        SET,
+        UNKNOWN;
+    }
+
+    // alerts.active.alert.clearedBy
+    public enum AlertClearedBy {
+        @SerializedName("device")
+        DEVICE,
+        @SerializedName("active")
+        ACTIVE,
+        UNKNOWN;
+    }
+
+    // alerts.active.alert.priority
+    public enum AlertPriority {
+        @SerializedName("info")
+        INFO,
+        @SerializedName("minor")
+        MINOR,
+        @SerializedName("moderate")
+        MODERATE,
+        @SerializedName("major") // guessed
+        MAJOR,
         UNKNOWN;
     }
 }

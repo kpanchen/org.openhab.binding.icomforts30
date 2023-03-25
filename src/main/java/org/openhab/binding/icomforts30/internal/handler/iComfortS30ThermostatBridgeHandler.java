@@ -68,6 +68,7 @@ public class iComfortS30ThermostatBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) HttpClient httpClient;
     private @NonNullByDefault({}) iComfortS30BridgeConfiguration configuration = null;
     private @NonNullByDefault({}) iComfortS30ApiClient apiClient = null;
+    private Integer currentPumpFailure = 0;
 
     protected @Nullable ScheduledFuture<?> refreshTask;
     protected @Nullable ScheduledFuture<?> messagePump;
@@ -131,10 +132,12 @@ public class iComfortS30ThermostatBridgeHandler extends BaseBridgeHandler {
                 if (apiClient != null) {
                     // Initialization can take a while, so kick it off on a separate thread
                     scheduler.schedule(() -> {
+                        // ToDo numberLogonAttempts
                         if (apiClient.login()) {
                             startMessagePump();
                             startRefreshTask();
                         } else {
+                            logger.error("Authentication to thermostat failed");
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "Authentication failed");
                         }
@@ -205,29 +208,52 @@ public class iComfortS30ThermostatBridgeHandler extends BaseBridgeHandler {
                 TimeUnit.SECONDS);
     }
 
+    // ToDo testing
     private void messagePump() {
         try {
             apiClient.messagePump();
-        } catch (Exception e) {
-            logger.debug("Error occured in the message pump, logging and ignoring: ", e);
+            currentPumpFailure = 0;
+        } catch (Exception ex) {
+            currentPumpFailure++;
+            logger.debug(
+                    "Error occured in the message pump, logging and ignoring: Error message was {}, exception trace {}",
+                    ex.getMessage().toString(), ex.toString());
+            logger.debug("Current Pump Failure count is: {}", currentPumpFailure.toString());
+            if (currentPumpFailure == configuration.getPumpCritical()) {
+                logger.debug("Current Pump Failure count excided max number of failures: {}, stopping the Pump",
+                        configuration.getPumpCritical().toString());
+                disposeMessagePump();
+            }
+
         }
     }
 
     private void startRefreshTask() {
+        // Add check for System Info not null!!!
         disposeRefreshTask();
 
         refreshTask = scheduler.scheduleWithFixedDelay(this::update, configuration.getRefreshDelay(),
                 configuration.getPollingInterval(), TimeUnit.SECONDS);
     }
 
+    // ToDo Set Thing status to Offline if pump is stopped and try to re-logon and restart it
     private void update() {
         try {
-            // apiClient.update(); //Replaced by Message Pump
+            ScheduledFuture<?> mP = messagePump;
+            if (mP != null && !mP.isCancelled()) {
+                updateThings();
+                updateStatus(ThingStatus.ONLINE);
+                setDeviceProperties(apiClient.getSystemsInfo());
+            } else {
+                if (apiClient.login()) {
+                    startMessagePump();
+                } else {
+                    logger.error("Authentication to thermostat failed, will re-try");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authentication failed");
+                }
 
-            // iComfortS30ApiClient apiClient2 = apiClient; #Testing!
-            updateThings();
-            updateStatus(ThingStatus.ONLINE);
-            setDeviceProperties(apiClient.getSystemsInfo());
+            }
+
         } catch (NullPointerException e) {
             updateStatus(ThingStatus.OFFLINE);
             logger.debug("Failed to update system status, probably system is not ready yet");
@@ -296,6 +322,11 @@ public class iComfortS30ThermostatBridgeHandler extends BaseBridgeHandler {
 
     public void setZoneOperationMode(ZoneList heatingZone, HVACMode hvacMode, Integer scheduleID) {
         tryToCall(() -> apiClient.setZoneOperationMode(heatingZone, hvacMode, scheduleID));
+        updateThings();
+    }
+
+    public void setZoneHumidificationMode(ZoneList heatingZone, HUMIDMode humidMode, Integer scheduleID) {
+        tryToCall(() -> apiClient.setZoneHumidificationMode(heatingZone, humidMode, scheduleID));
         updateThings();
     }
 

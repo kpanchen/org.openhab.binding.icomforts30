@@ -15,9 +15,11 @@ package org.openhab.binding.icomforts30.internal.handler;
 
 import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes;
 import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.ManualAway;
+import org.openhab.binding.icomforts30.internal.api.models.common.CustomTypes.TemperatureUnit;
 import org.openhab.binding.icomforts30.internal.api.models.response.Occupancy;
 import org.openhab.binding.icomforts30.internal.api.models.response.System;
 import org.openhab.binding.icomforts30.internal.iComfortS30BindingConstants;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -62,6 +64,16 @@ public class iComfortS30SystemHandler extends BaseiComfortS30Handler {
             updateState(iComfortS30BindingConstants.SYSTEM_AWAY_MODE_CHANNEL,
                     new StringType(ManualAway.HOME.toString()));
         }
+
+        if (systemInfo.getConfig().temperatureUnit == TemperatureUnit.CELSIUS) {
+            updateState(iComfortS30BindingConstants.SYSTEM_OUTSIDE_TEMPERATURE_CHANNEL,
+                    new QuantityType<>(systemInfo.getStatus().outdoorTemperatureC,
+                            systemInfo.getConfig().temperatureUnit.getTemperatureUnit()));
+        } else {
+            updateState(iComfortS30BindingConstants.SYSTEM_OUTSIDE_TEMPERATURE_CHANNEL,
+                    new QuantityType<>(systemInfo.getStatus().outdoorTemperature,
+                            systemInfo.getConfig().temperatureUnit.getTemperatureUnit()));
+        }
     }
 
     @Override
@@ -77,6 +89,7 @@ public class iComfortS30SystemHandler extends BaseiComfortS30Handler {
                 bridge.setSystemManualAwayMode(CustomTypes.ManualAway.valueOf(command.toString()).getManualAwayValue());
             }
 
+            // ToDo
             // cancel_smart_away
             // enable_smart_away
 

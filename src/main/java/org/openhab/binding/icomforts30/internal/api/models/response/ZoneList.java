@@ -30,7 +30,7 @@ import com.google.gson.annotations.SerializedName;
 public class ZoneList {
 
     @SerializedName("id")
-    public Integer id;
+    private Integer id;
 
     public Integer getId() {
         return this.id;
@@ -114,8 +114,8 @@ public class ZoneList {
     }
 
     @SerializedName("schedule")
-    // public ZoneSchedule schedule;
     public Schedule schedule;
+    // Class Period defined in Schedule.java file
 
     public Schedule getSchedule() {
         return this.schedule;
@@ -305,49 +305,7 @@ public class ZoneList {
 
         @SerializedName("maxHspC")
         public Float maxHspC;
-
-        // public class ScheduleHold {
-
-        // @SerializedName("enabled")
-        // public Boolean enabled;
-
-        // @SerializedName("exceptionType")
-        // public PeriodExceptionType exceptionType;
-
-        // @SerializedName("scheduleId")
-        // public Integer scheduleId;
-
-        // @SerializedName("expirationMode")
-        // public PeriodExpirationMode expirationMode;
-
-        // @SerializedName("expiresOn")
-        // public String expiresOn;
-        // }
     }
-
-    // public class ZoneSchedule {
-
-    // @SerializedName("periodCount")
-    // public Integer periodCount;
-
-    // @SerializedName("name")
-    // public String name;
-
-    // @SerializedName("periods")
-    // public ArrayList<Periods> periods;
-
-    // private class Periods {
-
-    // @SerializedName("id")
-    // public Integer id;
-
-    // @SerializedName("enabled")
-    // public Boolean enabled;
-
-    // @SerializedName("period")
-    // public Period period;
-    // }
-    // }
 
     public class ZoneSensors {
 
@@ -356,6 +314,24 @@ public class ZoneList {
 
         @SerializedName("doNotPersist")
         public Boolean doNotPersist;
+
+        @SerializedName("writeAccess")
+        public WriteAccess writeAccess;
+
+        @SerializedName("tempStatus")
+        public String tempStatus;
+
+        @SerializedName("hum")
+        public Float hum;
+
+        @SerializedName("tsense")
+        public Float tsense;
+
+        @SerializedName("humStatus")
+        public String humStatus;
+
+        @SerializedName("tant")
+        public Float tant;
     }
 
     public class ZoneInputs {

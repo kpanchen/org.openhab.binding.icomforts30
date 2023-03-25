@@ -156,7 +156,7 @@ public class System {
         public Boolean replacementPart;
 
         @SerializedName("alert")
-        public String alert;
+        public Alert alert;
 
         @SerializedName("feelsLikeMode")
         public Boolean feelsLikeMode;
@@ -310,7 +310,6 @@ public class System {
             @SerializedName("indoorUnitStaging")
             public Integer indoorUnitStaging;
 
-            // Need to replace with custom type
             @SerializedName("humidifierType")
             public HumidifierUnit humidifierType;
 

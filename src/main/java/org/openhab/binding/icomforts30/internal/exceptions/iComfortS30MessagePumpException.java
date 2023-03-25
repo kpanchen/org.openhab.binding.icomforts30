@@ -16,26 +16,25 @@ package org.openhab.binding.icomforts30.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Thrown if connection to HVAC fails
- * 
+ * Exception class for generic exceptions
+ *
  * @author Konstantin Panchenko - Initial contribution
  */
-
 @SuppressWarnings("serial")
 @NonNullByDefault
-public class iComfortS30ConnectionFailedException extends iComfortS30Exception {
+public class iComfortS30MessagePumpException extends iComfortS30Exception {
 
-    private static final long serialVersionUID = 2221L;
+    private static final long serialVersionUID = 4441L;
 
-    public iComfortS30ConnectionFailedException() {
+    public iComfortS30MessagePumpException() {
         super();
     }
 
-    public iComfortS30ConnectionFailedException(String message) {
+    public iComfortS30MessagePumpException(String message) {
         super(message);
     }
 
-    public iComfortS30ConnectionFailedException(String message, Throwable cause) {
-        super(message, cause);
+    public iComfortS30MessagePumpException(String message, Throwable ex) {
+        super(message, ex);
     }
 }

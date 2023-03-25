@@ -48,8 +48,11 @@ public class iComfortS30BindingConstants {
     public static final String ZONE_TEMPERATURE_CHANNEL = "Temperature";
     public static final String ZONE_HUMIDITY_CHANNEL = "Humidity";
     public static final String ZONE_SYSTEM_STATUS_CHANNEL = "SystemStatus";
+    public static final String ZONE_HUMIDITY_STATUS_CHANNEL = "HumidityStatus";
+    public static final String SYSTEM_OUTSIDE_TEMPERATURE_CHANNEL = "OutsideTemperature";
     // Read-Write channels
     public static final String ZONE_OPERATION_MODE_CHANNEL = "OperationMode";
+    public static final String ZONE_HUMIDITY_MODE_CHANNEL = "HumidityMode";
     public static final String SYSTEM_AWAY_MODE_CHANNEL = "AwayMode";
 
     public static final String ZONE_FAN_MODE_CHANNEL = "FanMode";

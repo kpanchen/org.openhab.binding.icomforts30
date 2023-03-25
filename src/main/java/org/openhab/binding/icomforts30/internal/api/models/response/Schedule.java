@@ -15,6 +15,8 @@ package org.openhab.binding.icomforts30.internal.api.models.response;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -33,5 +35,19 @@ public class Schedule {
     public Integer periodCount;
 
     @SerializedName("periods")
-    public ArrayList<PeriodList> periods;
+    private ArrayList<PeriodList> periods;
+
+    public ArrayList<PeriodList> getPeriods() {
+        return this.periods;
+    }
+
+    public @Nullable PeriodList getPeriod(Integer iD) {
+        for (PeriodList periodElement : periods) {
+            if (periodElement.getId() == iD) {
+                return periodElement;
+            }
+
+        }
+        return null;
+    }
 }

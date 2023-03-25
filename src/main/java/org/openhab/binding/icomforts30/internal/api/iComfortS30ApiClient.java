@@ -29,9 +29,11 @@ import org.openhab.binding.icomforts30.internal.api.models.iComfortS30System;
 import org.openhab.binding.icomforts30.internal.api.models.request.AdditionalParameters;
 import org.openhab.binding.icomforts30.internal.api.models.request.CommandData;
 import org.openhab.binding.icomforts30.internal.api.models.request.RequestData;
+import org.openhab.binding.icomforts30.internal.api.models.request.RequestMessages;
 import org.openhab.binding.icomforts30.internal.api.models.request.RetrieveData;
 import org.openhab.binding.icomforts30.internal.api.models.request.SetFanModeRequest;
 import org.openhab.binding.icomforts30.internal.api.models.request.SetHVACModeRequest;
+import org.openhab.binding.icomforts30.internal.api.models.request.SetHumidityModeRequest;
 import org.openhab.binding.icomforts30.internal.api.models.request.SetManualAwayRequest;
 import org.openhab.binding.icomforts30.internal.api.models.request.SetScheduleHoldRequest;
 import org.openhab.binding.icomforts30.internal.api.models.request.SetSchedulePeriodRequest;
@@ -43,6 +45,8 @@ import org.openhab.binding.icomforts30.internal.api.models.response.System;
 import org.openhab.binding.icomforts30.internal.api.models.response.ZoneList;
 import org.openhab.binding.icomforts30.internal.configuration.iComfortS30BridgeConfiguration;
 import org.openhab.binding.icomforts30.internal.exceptions.iComfortS30ApiClientException;
+import org.openhab.binding.icomforts30.internal.exceptions.iComfortS30Exception;
+import org.openhab.binding.icomforts30.internal.exceptions.iComfortS30MessagePumpException;
 import org.openhab.binding.icomforts30.internal.iComfortS30BindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,9 +139,9 @@ public class iComfortS30ApiClient {
 
         try {
             httpClient.start();
-        } catch (Exception e) {
-            logger.error("Could not start http client", e);
-            throw new iComfortS30ApiClientException("Could not start http client", e);
+        } catch (Exception ex) {
+            logger.error("Could not start http client", ex);
+            throw new iComfortS30ApiClientException("Could not start http client", ex);
         }
 
         apiAccess = new ApiAccess(httpClient);
@@ -155,8 +159,8 @@ public class iComfortS30ApiClient {
         if (httpClient.isStarted()) {
             try {
                 httpClient.stop();
-            } catch (Exception e) {
-                logger.error("Could not stop http client.", e);
+            } catch (Exception ex) {
+                logger.error("Could not stop http client.", ex);
             }
         }
     }
@@ -169,24 +173,24 @@ public class iComfortS30ApiClient {
             Boolean loginResult = apiAccess.doUnAuthenticatedPost(urlLogin, null, Boolean.class);
             if (loginResult != null) {
                 if (loginResult == true) {
-                    Boolean requestResult = requestDataHelper(system);
+                    Boolean requestResult = requestDataHelper(system, RequestMessages.MessagesNormal());
                     if (requestResult != null) {
                         if (requestResult == true) {
                             return true;
                         } else {
-                            throw new Exception("Data request attempt was unsuccessful");
+                            throw new iComfortS30Exception("Data request attempt was unsuccessful");
                         }
                     } else {
-                        throw new Exception("Fatal error during data request attempt");
+                        throw new iComfortS30Exception("Fatal error during data request attempt");
                     }
                 } else {
-                    throw new Exception("Logon attempt was unsuccessful");
+                    throw new iComfortS30Exception("Logon attempt was unsuccessful");
                 }
             } else {
-                throw new Exception("Fatal error during logon attempt");
+                throw new iComfortS30Exception("Fatal error during logon attempt");
             }
-        } catch (Exception e) {
-            logger.error("Error: ", e);
+        } catch (Exception ex) {
+            logger.error("Error: ", ex);
         }
 
         return false;
@@ -205,24 +209,27 @@ public class iComfortS30ApiClient {
                 throw new Exception("Fatal error during logout attempt from Lennox S30 thermostat");
             }
 
-        } catch (TimeoutException e) {
-            logger.error("Timeout exception during log out: ", e.getMessage());
-        } catch (Exception e) {
-            logger.error("Logout error: ", e.getMessage());
+        } catch (TimeoutException ex) {
+            logger.error("Timeout exception during log out: ", ex.getMessage());
+        } catch (Exception ex) {
+            logger.error("Logout error: ", ex.getMessage());
         }
         close();
     }
 
-    public void messagePump() throws Exception {
+    public void messagePump() throws iComfortS30MessagePumpException {
         try {
             // Request time out set one seconds less then pump interval
             apiAccess.setTimeout((configuration.getPumpInterval() - 1) * 1000);
             // Requesting new message
             Messages out = apiAccess.doAuthenticatedGet(urlRetrieve, null, new RetrieveData(), Messages.class);
+            // Messages out = null;
             if (out == null) {
+                // if (true) {
                 // Request haven't returned any data
                 // Possibly add relogon here
-                return;
+                // Throw exception
+                throw new iComfortS30MessagePumpException("Message Pump Error: device returned bad responce");
             }
 
             for (int i = 0; i < out.getNumberOfMessages(); i++) {
@@ -316,28 +323,26 @@ public class iComfortS30ApiClient {
                         for (ZoneList zl : out.getMessage(i).getData().getZones()) {
                             if (zl.getId() == z) {
                                 if (system.zoneExist(z)) {
-                                    if (zl.getPublisher() != null) {
-                                        updateIfNotNull(system.getZone(z).getPublisher(), zl.getPublisher());
-                                    }
-                                    if (zl.getStatus() != null) {
-
-                                        updateIfNotNull(system.getZone(z).getStatus(), zl.getStatus());
-                                    }
-                                    if (zl.getConfig() != null) {
-
-                                        updateIfNotNull(system.getZone(z).getConfig(), zl.getConfig());
-                                    }
-                                    if (zl.getSchedule() != null) {
-
-                                        updateIfNotNull(system.getZone(z).getSchedule(), zl.getSchedule());
-                                    }
-                                    if (zl.getSensors() != null) {
-
-                                        updateIfNotNull(system.getZone(z).getSensors(), zl.getSensors());
-                                    }
-                                    if (zl.getInputs() != null) {
-
-                                        updateIfNotNull(system.getZone(z).getInputs(), zl.getInputs());
+                                    ZoneList zone = system.getZone(z);
+                                    if (zone != null) {
+                                        if (zl.getPublisher() != null) {
+                                            updateIfNotNull(zone.getPublisher(), zl.getPublisher());
+                                        }
+                                        if (zl.getStatus() != null) {
+                                            updateIfNotNull(zone.getStatus(), zl.getStatus());
+                                        }
+                                        if (zl.getConfig() != null) {
+                                            updateIfNotNull(zone.getConfig(), zl.getConfig());
+                                        }
+                                        if (zl.getSchedule() != null) {
+                                            updateIfNotNull(zone.getSchedule(), zl.getSchedule());
+                                        }
+                                        if (zl.getSensors() != null) {
+                                            updateIfNotNull(zone.getSensors(), zl.getSensors());
+                                        }
+                                        if (zl.getInputs() != null) {
+                                            updateIfNotNull(zone.getInputs(), zl.getInputs());
+                                        }
                                     }
                                 } else {
                                     system.setZone(z, zl);
@@ -368,6 +373,20 @@ public class iComfortS30ApiClient {
                         updateIfNotNull(system.getOccupancy(), out.getMessage(i).getData().getOccupancy());
                     }
 
+                } else if (out.getMessage(i).getData().getFirmware() != null) {
+                    if (system.getFirmware() == null) {
+                        system.setFirmware(out.getMessage(i).getData().getFirmware());
+                    } else {
+                        updateIfNotNull(system.getFirmware(), out.getMessage(i).getData().getFirmware());
+                    }
+
+                } else if (out.getMessage(i).getData().getRgw() != null) {
+                    if (system.getRgw() == null) {
+                        system.setRgw(out.getMessage(i).getData().getRgw());
+                    } else {
+                        updateIfNotNull(system.getRgw(), out.getMessage(i).getData().getRgw());
+                    }
+
                 } else if (out.getMessage(i).getData().getEquipments() != null) {
                     if (system.getEquipments().isEmpty()) {
                         system.setEquipments(out.getMessage(i).getData().getEquipments());
@@ -389,19 +408,44 @@ public class iComfortS30ApiClient {
                         updateIfNotNull(system.getLogs(), out.getMessage(i).getData().getLogs());
                     }
 
+                } else if (out.getMessage(i).getData().getAlerts() != null) {
+                    if (out.getMessage(i).getData().getAlerts().getActiveAlerts() != null) {
+                        if (system.getAlerts().getActiveAlerts() == null) {
+                            system.getAlerts()
+                                    .setActiveAlerts(out.getMessage(i).getData().getAlerts().getActiveAlerts());
+                        } else {
+                            // ToDo loop, possible
+                            updateIfNotNull(system.getAlerts().getActiveAlerts(),
+                                    out.getMessage(i).getData().getAlerts().getActiveAlerts());
+                        }
+                    }
+
+                    if (out.getMessage(i).getData().getAlerts().getAlertsMeta() != null) {
+                        if (system.getAlerts().getAlertsMeta() == null) {
+                            system.getAlerts().setAlertsMeta(out.getMessage(i).getData().getAlerts().getAlertsMeta());
+                        } else {
+                            updateIfNotNull(system.getAlerts().getAlertsMeta(),
+                                    out.getMessage(i).getData().getAlerts().getAlertsMeta());
+                        }
+                    }
+
                 }
             }
 
-        } catch (TimeoutException e) {
+        } catch (TimeoutException ex) {
             logger.debug("Timeout Exception occured in the message pump, will retry");
 
-        } catch (Exception e) {
-            logger.debug("Message pump error: {}", e.getMessage());
-            Throwable exceptionCause = e.getCause();
+        } catch (iComfortS30MessagePumpException ex) {
+            // ToDo Testing
+            throw new iComfortS30MessagePumpException(ex.getMessage());
+
+        } catch (Exception ex) {
+            logger.debug("Non-fatal Message pump Exception occured: {}", ex.getMessage());
+            Throwable exceptionCause = ex.getCause();
             if (exceptionCause != null) {
-                logger.debug(exceptionCause.toString());
+                logger.debug("Exception cause: {}", exceptionCause.toString());
             }
-            throw new Exception(e);
+            logger.debug("Message pump will retry");
         }
     }
 
@@ -453,21 +497,41 @@ public class iComfortS30ApiClient {
             throws TimeoutException {
         SetHVACModeRequest data = new SetHVACModeRequest(hvacMode, scheduleID);
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).getStatus().period.systemMode = hvacMode;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.getStatus().period.systemMode = hvacMode;
+            }
+        }
+    }
+
+    public void setZoneHumidificationMode(ZoneList heatingZone, HUMIDMode humidMode, Integer scheduleID)
+            throws TimeoutException {
+        SetHumidityModeRequest data = new SetHumidityModeRequest(humidMode, scheduleID);
+        if (publishMessageHelper(this.system, data)) {
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.getStatus().period.humidityMode = humidMode;
+            }
         }
     }
 
     public void setZoneFanMode(ZoneList heatingZone, FANMode fanMode, Integer scheduleID) throws TimeoutException {
         SetFanModeRequest data = new SetFanModeRequest(fanMode, scheduleID);
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).getStatus().period.fanMode = fanMode;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.getStatus().period.fanMode = fanMode;
+            }
         }
     }
 
     public void setSchedule(ZoneList heatingZone, Integer scheduleId) {
-        SetScheduleRequest data = new SetScheduleRequest(heatingZone.id, scheduleId);
+        SetScheduleRequest data = new SetScheduleRequest(heatingZone.getId(), scheduleId);
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).config.scheduleId = scheduleId;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.config.scheduleId = scheduleId;
+            }
         }
     }
 
@@ -475,15 +539,17 @@ public class iComfortS30ApiClient {
             Float spC, Integer husp, Integer desp, Integer scheduleId) {
         SetSchedulePeriodSetPointRequest data = new SetSchedulePeriodSetPointRequest(hspF, cspC, hspC, cspF, spF, spC,
                 husp, desp, scheduleId);
-        // Disabled for testing
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).getStatus().period.hspF = hspF;
-            this.system.getZone(heatingZone.id).getStatus().period.cspC = cspC;
-            this.system.getZone(heatingZone.id).getStatus().period.hspC = hspC;
-            this.system.getZone(heatingZone.id).getStatus().period.cspF = cspF;
-            this.system.getZone(heatingZone.id).getStatus().period.spF = spF;
-            this.system.getZone(heatingZone.id).getStatus().period.husp = husp;
-            this.system.getZone(heatingZone.id).getStatus().period.desp = desp;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.getStatus().period.hspF = hspF;
+                zone.getStatus().period.cspC = cspC;
+                zone.getStatus().period.hspC = hspC;
+                zone.getStatus().period.cspF = cspF;
+                zone.getStatus().period.spF = spF;
+                zone.getStatus().period.husp = husp;
+                zone.getStatus().period.desp = desp;
+            }
         }
     }
 
@@ -493,31 +559,38 @@ public class iComfortS30ApiClient {
         SetSchedulePeriodRequest data = new SetSchedulePeriodRequest(hspF, cspC, hspC, cspF, spF, spC, husp, desp,
                 humidityMode, systemMode, startTime, fanMode, scheduleId);
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).getStatus().period.hspF = hspF;
-            this.system.getZone(heatingZone.id).getStatus().period.cspC = cspC;
-            this.system.getZone(heatingZone.id).getStatus().period.hspC = hspC;
-            this.system.getZone(heatingZone.id).getStatus().period.cspF = cspF;
-            this.system.getZone(heatingZone.id).getStatus().period.spF = spF;
-            this.system.getZone(heatingZone.id).getStatus().period.husp = husp;
-            this.system.getZone(heatingZone.id).getStatus().period.desp = desp;
-            this.system.getZone(heatingZone.id).getStatus().period.humidityMode = humidityMode;
-            this.system.getZone(heatingZone.id).getStatus().period.systemMode = systemMode;
-            this.system.getZone(heatingZone.id).getStatus().period.startTime = startTime;
-            this.system.getZone(heatingZone.id).getStatus().period.fanMode = fanMode;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.getStatus().period.hspF = hspF;
+                zone.getStatus().period.cspC = cspC;
+                zone.getStatus().period.hspC = hspC;
+                zone.getStatus().period.cspF = cspF;
+                zone.getStatus().period.spF = spF;
+                zone.getStatus().period.husp = husp;
+                zone.getStatus().period.desp = desp;
+                zone.getStatus().period.humidityMode = humidityMode;
+                zone.getStatus().period.systemMode = systemMode;
+                zone.getStatus().period.startTime = startTime;
+                zone.getStatus().period.fanMode = fanMode;
+            }
+
         }
     }
 
     public void setScheduleHold(ZoneList heatingZone, PeriodExceptionType exceptionType, Boolean scheduleHold,
             String expiresOn, PeriodExpirationMode expirationMode, Integer scheduleId) {
-        SetScheduleHoldRequest data = new SetScheduleHoldRequest(heatingZone.id, exceptionType, scheduleHold, expiresOn,
-                expirationMode, scheduleId);
+        SetScheduleHoldRequest data = new SetScheduleHoldRequest(heatingZone.getId(), exceptionType, scheduleHold,
+                expiresOn, expirationMode, scheduleId);
         // Disabled for testing
         if (publishMessageHelper(this.system, data)) {
-            this.system.getZone(heatingZone.id).config.scheduleHold.enabled = scheduleHold;
-            this.system.getZone(heatingZone.id).config.scheduleHold.exceptionType = exceptionType;
-            this.system.getZone(heatingZone.id).config.scheduleHold.expiresOn = expiresOn;
-            this.system.getZone(heatingZone.id).config.scheduleHold.expirationMode = expirationMode;
-            this.system.getZone(heatingZone.id).config.scheduleHold.scheduleID = scheduleId;
+            ZoneList zone = this.system.getZone(heatingZone.getId());
+            if (zone != null) {
+                zone.config.scheduleHold.enabled = scheduleHold;
+                zone.config.scheduleHold.exceptionType = exceptionType;
+                zone.config.scheduleHold.expiresOn = expiresOn;
+                zone.config.scheduleHold.expirationMode = expirationMode;
+                zone.config.scheduleHold.scheduleID = scheduleId;
+            }
         }
         ;
     }
@@ -604,16 +677,18 @@ public class iComfortS30ApiClient {
      * }
      */
 
-    public Boolean requestDataHelper(iComfortS30System system) {
+    public Boolean requestDataHelper(iComfortS30System system, String addParam) {
         logger.debug("Enter - Request Data Helper");
-        String addParam = "1;/devices;/zones;/equipments;/schedules;/occupancy;/system";
+        // Examples of request strings
+        // "1;/devices;/zones;/equipments;/schedules;/occupancy;/system;/fwm;/rgw;/alerts/active;/alerts/meta;/homes";
+        // "1;/systemControl;/reminderSensors;/reminders;/alerts/active;/alerts/meta;/fwm;/rgw;/devices;/zones;/equipments;/schedules;/occupancy;/system"
 
         try {
             return apiAccess.doAuthenticatedPost(urlRequestdata, null, new RequestData(applicationID, getNewMessageID(),
                     system.getSysID(), new AdditionalParameters(addParam)), Boolean.class);
 
         } catch (Exception e) {
-            logger.debug("Failed to Request Data from the device: ", e.getMessage());
+            logger.debug("Failed to Request Data from the device: {}", e.getMessage());
             return false;
         }
     }
