@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,30 +92,31 @@ public class ZoneList {
     }
 
     public void setConfig(ZoneConfig config) {
-        // this.config = config;
-        if (config.name != null) {
-            this.config.name = config.name;
-        }
-        if (config.name != null) {
-            this.config.writeAccess = config.writeAccess;
-        }
-        if (config.name != null) {
-            this.config.scheduleId = config.scheduleId;
-        }
-        if (config.name != null) {
-            this.config.scheduleHold = config.scheduleHold;
-        }
-        if (config.name != null) {
-            this.config.name = config.name;
-        }
-        if (config.name != null) {
-            this.config.name = config.name;
-        }
+        this.config = config;
+        // ToDo - not sure why separete fields were implemented
+        // if (config.name != null) {
+        // this.config.name = config.name;
+        // }
+        // if (config.name != null) {
+        // this.config.writeAccess = config.writeAccess;
+        // }
+        // if (config.name != null) {
+        // this.config.scheduleId = config.scheduleId;
+        // }
+        // if (config.name != null) {
+        // this.config.scheduleHold = config.scheduleHold;
+        // }
+        // if (config.name != null) {
+        // this.config.name = config.name;
+        // }
+        // if (config.name != null) {
+        // this.config.name = config.name;
+        // }
     }
 
     @SerializedName("schedule")
     public Schedule schedule;
-    // Class Period defined in Schedule.java file
+    // Class Schedule defined in Schedule.java file
 
     public Schedule getSchedule() {
         return this.schedule;
@@ -177,8 +178,16 @@ public class ZoneList {
         public Status humidityStatus;
 
         @SerializedName("period")
-        public Period period;
+        private Period period;
         // Class Period defined in Period.java file
+
+        public Period getPeriod() {
+            return this.period;
+        }
+
+        public void setPeriod(Period period) {
+            this.period = period;
+        }
 
         @SerializedName("humOperation")
         public HUMIDOperation humOperation;

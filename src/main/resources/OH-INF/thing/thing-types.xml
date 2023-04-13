@@ -19,12 +19,15 @@
 			<channel id="Humidity" typeId="humidity"/>
 			<channel id="SystemStatus" typeId="systemStatus"/>
 			<channel id="OperationMode" typeId="operationMode"/>
+			<channel id="FanStatus" typeId="fanStatus"/>
 			<channel id="FanMode" typeId="fanMode"/>
 			<channel id="CoolSetPoint" typeId="coolSetPoint"/>
 			<channel id="HeatSetPoint" typeId="heatSetPoint"/>
 			<channel id="SetPoint" typeId="setPoint"/>
 			<channel id="HumidityStatus" typeId="humidityStatus"/>
 			<channel id="HumidityMode" typeId="humidityMode"/>
+			<channel id="HumiditySetPoint" typeId="humiditySetPoint"/>
+			<channel id="DehumidificationSetPoint" typeId="dehumidificationSetPoint"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:lennox:zone"/>

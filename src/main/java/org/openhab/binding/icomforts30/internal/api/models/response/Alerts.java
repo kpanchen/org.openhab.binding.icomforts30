@@ -36,7 +36,7 @@ public class Alerts {
     private class ActiveList {
 
         @SerializedName("alert")
-        public ArrayList<Alert> alert;
+        public Alert alert;
 
         private class Alert {
 

@@ -48,6 +48,7 @@ public class iComfortS30BindingConstants {
     public static final String ZONE_TEMPERATURE_CHANNEL = "Temperature";
     public static final String ZONE_HUMIDITY_CHANNEL = "Humidity";
     public static final String ZONE_SYSTEM_STATUS_CHANNEL = "SystemStatus";
+    public static final String ZONE_FAN_STATUS_CHANNEL = "FanStatus";
     public static final String ZONE_HUMIDITY_STATUS_CHANNEL = "HumidityStatus";
     public static final String SYSTEM_OUTSIDE_TEMPERATURE_CHANNEL = "OutsideTemperature";
     // Read-Write channels
@@ -59,6 +60,8 @@ public class iComfortS30BindingConstants {
     public static final String ZONE_COOL_SET_POINT_CHANNEL = "CoolSetPoint";
     public static final String ZONE_HEAT_SET_POINT_CHANNEL = "HeatSetPoint";
     public static final String ZONE_SET_POINT_CHANNEL = "SetPoint";
+    public static final String ZONE_HUMIDITY_SET_POINT_CHANNEL = "HumiditySetPoint";
+    public static final String ZONE_DEHUMIDIFICATION_SET_POINT_CHANNEL = "DehumidificationSetPoint";
 
     public static final String TCS_PROPERTY_SYSTEM_NAME = "systemName";
     public static final String TCS_PROPERTY_PRODUCT_TYPE = "productType";

@@ -499,7 +499,7 @@ public class iComfortS30ApiClient {
         if (publishMessageHelper(this.system, data)) {
             ZoneList zone = this.system.getZone(heatingZone.getId());
             if (zone != null) {
-                zone.getStatus().period.systemMode = hvacMode;
+                zone.getStatus().getPeriod().systemMode = hvacMode;
             }
         }
     }
@@ -510,7 +510,7 @@ public class iComfortS30ApiClient {
         if (publishMessageHelper(this.system, data)) {
             ZoneList zone = this.system.getZone(heatingZone.getId());
             if (zone != null) {
-                zone.getStatus().period.humidityMode = humidMode;
+                zone.getStatus().getPeriod().humidityMode = humidMode;
             }
         }
     }
@@ -520,7 +520,7 @@ public class iComfortS30ApiClient {
         if (publishMessageHelper(this.system, data)) {
             ZoneList zone = this.system.getZone(heatingZone.getId());
             if (zone != null) {
-                zone.getStatus().period.fanMode = fanMode;
+                zone.getStatus().getPeriod().fanMode = fanMode;
             }
         }
     }
@@ -542,13 +542,13 @@ public class iComfortS30ApiClient {
         if (publishMessageHelper(this.system, data)) {
             ZoneList zone = this.system.getZone(heatingZone.getId());
             if (zone != null) {
-                zone.getStatus().period.hspF = hspF;
-                zone.getStatus().period.cspC = cspC;
-                zone.getStatus().period.hspC = hspC;
-                zone.getStatus().period.cspF = cspF;
-                zone.getStatus().period.spF = spF;
-                zone.getStatus().period.husp = husp;
-                zone.getStatus().period.desp = desp;
+                zone.getStatus().getPeriod().hspF = hspF;
+                zone.getStatus().getPeriod().cspC = cspC;
+                zone.getStatus().getPeriod().hspC = hspC;
+                zone.getStatus().getPeriod().cspF = cspF;
+                zone.getStatus().getPeriod().spF = spF;
+                zone.getStatus().getPeriod().husp = husp;
+                zone.getStatus().getPeriod().desp = desp;
             }
         }
     }
@@ -561,17 +561,17 @@ public class iComfortS30ApiClient {
         if (publishMessageHelper(this.system, data)) {
             ZoneList zone = this.system.getZone(heatingZone.getId());
             if (zone != null) {
-                zone.getStatus().period.hspF = hspF;
-                zone.getStatus().period.cspC = cspC;
-                zone.getStatus().period.hspC = hspC;
-                zone.getStatus().period.cspF = cspF;
-                zone.getStatus().period.spF = spF;
-                zone.getStatus().period.husp = husp;
-                zone.getStatus().period.desp = desp;
-                zone.getStatus().period.humidityMode = humidityMode;
-                zone.getStatus().period.systemMode = systemMode;
-                zone.getStatus().period.startTime = startTime;
-                zone.getStatus().period.fanMode = fanMode;
+                zone.getStatus().getPeriod().hspF = hspF;
+                zone.getStatus().getPeriod().cspC = cspC;
+                zone.getStatus().getPeriod().hspC = hspC;
+                zone.getStatus().getPeriod().cspF = cspF;
+                zone.getStatus().getPeriod().spF = spF;
+                zone.getStatus().getPeriod().husp = husp;
+                zone.getStatus().getPeriod().desp = desp;
+                zone.getStatus().getPeriod().humidityMode = humidityMode;
+                zone.getStatus().getPeriod().systemMode = systemMode;
+                zone.getStatus().getPeriod().startTime = startTime;
+                zone.getStatus().getPeriod().fanMode = fanMode;
             }
 
         }

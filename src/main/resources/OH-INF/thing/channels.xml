@@ -71,10 +71,18 @@
 		<state step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="fanStatus">
+		<item-type>Switch</item-type>
+		<label>Fan Status</label>
+		<description>Current fan status</description>
+		<category>heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="fanMode">
 		<item-type>String</item-type>
-		<label>Fan Mode Status</label>
-		<description>Current fan mode status</description>
+		<label>Fan Mode</label>
+		<description>Current fan mode</description>
 		<category>heating</category>
 		<state pattern="%s" readOnly="false">
 			<options>
@@ -136,6 +144,22 @@
 				<option value="HUMID_OFF">System is off</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="humiditySetPoint">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Set Point</label>
+		<description>Gets or sets the humidity set point of this zone.</description>
+		<category>Humidity</category>
+		<state step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="dehumidificationSetPoint">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Dehumidification Set Point</label>
+		<description>Gets or sets the Dehumidification set point of this zone.</description>
+		<category>Humidity</category>
+		<state step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

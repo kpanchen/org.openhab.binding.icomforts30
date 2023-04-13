@@ -69,10 +69,13 @@ SystemStatus - Current system status (Read Only)<br />
 HumidityStatus - Current humidity status (Read Only)<br />
 OperationMode - Current operation mode (Read / Write)<br />
 HumidityMode - Current humidity mode (Read / Write)<br />
+FanStatus - Current fan status (Read Only)<br />
 FanMode - Current fan mode (Read / Write)<br />
 CoolSetPoint - Cool set point for the zone (Read / Write)<br />
 HeatSetPoint - Heat set point for the zone (Read / Write)<br />
 SetPoint - Heat or Cool set point for the zone in single set point mode (Read / Write)<br />
+HumiditySetPoint - Humidity set point for the zone (Read / Write)<br />
+DehumidificationSetPoint - Dehumidification set point for the zone (Read / Write)<br />
 
 
 ## Full Example
@@ -96,14 +99,17 @@ String iComfortS30HeatingZone_0_SystemStatus "System Status [%s]" <heating> (gWh
 String iComfortS30HeatingZone_0_OperationMode "Operation Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:OperationMode"}
 String iComfortS30HeatingZone_0_HumidityStatus "Humidity Status [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HumidityStatus"}
 String iComfortS30HeatingZone_0_HumididtyMode "Humidity Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HumidityMode"}
-String iComfortS30HeatingZone_0_FanModeStatus "Fan Mode [%s]" <fan> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:FanMode"}
+Switch iComfortS30HeatingZone_0_FanStatus "Fan Status [%s]" <fan> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:FanStatus"}
+String iComfortS30HeatingZone_0_FanMode "Fan Mode [%s]" <fan> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:FanMode"}
 Number:Temperature iComfortS30HeatingZone_0_CoolSetPoint "Cool Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:CoolSetPoint"}
 Number:Temperature iComfortS30HeatingZone_0_HeatSetPoint "Heat Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HeatSetPoint"}
+Number:Dimensionless iComfortS30HeatingZone_0_HumiditySetPoint "Humidity Set Point [%.1f %unit%]" <humidity> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:HumiditySetPoint"}
+Number:Dimensionless iComfortS30HeatingZone_0_DehumidificationSetPoint "Dehumidification Set Point [%.1f %unit%]" <humidity> (gWholeHouse) {channel="icomforts30:zone:knplennoxs30:s30_zone_0:DehumidificationSetPoint"}
 ```
 
 ```
 //System items:
-String iComfortS30System_AwayModeStatus "Away Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:system:knplennoxs30:s30_system:AwayMode"}
+String iComfortS30System_AwayMode "Away Mode [%s]" <heating> (gWholeHouse) {channel="icomforts30:system:knplennoxs30:s30_system:AwayMode"}
 Number:Temperature iComfortS30System_Outside_Temperature "Outside Temperature [%.1f %unit%]" <temperature> (gWholeHouse, gTemperatureSensors) {channel="icomforts30:system:knplennoxs30:s30_system:OutsideTemperature"}
 ```
 
@@ -114,12 +120,15 @@ Text item=iComfortS30HeatingZone_0_Temperature
 Text item=iComfortS30HeatingZone_0_Humidity
 Text item=iComfortS30HeatingZone_0_SystemStatus
 Text item=iComfortS30HeatingZone_0_HumidityStatus
+Text item=iComfortS30HeatingZone_0_FanStatus
 Selection  item=iComfortS30HeatingZone_0_OperationMode mappings=[HVAC_OFF=System is idle", HVAC_HEAT="System is heating", HVAC_COOL="System is cooling", HVAC_EMERGENCY_HEAT="System is emergency heating", HVAC_HEAT_COOL="System is heating or cooling"]
 Selection  item=iComfortS30HeatingZone_0_HumididtyMode
-Switch item=Thermostat_Away_Mode mappings=[AWAY="Away", HOME="Home"]
-Selection  item=Thermostat_Fan_Mode mappings=[FAN_AUTO="Auto", FAN_ON="On", FAN_CIRCULATE="Circulate"]
-Setpoint item=Thermostat_Cool_Point
-Setpoint item=Thermostat_Heat_Point
+Switch item=iComfortS30System_AwayMode mappings=[AWAY="Away", HOME="Home"]
+Selection  item=iComfortS30HeatingZone_0_FanMode mappings=[FAN_AUTO="Auto", FAN_ON="On", FAN_CIRCULATE="Circulate"]
+Setpoint item=iComfortS30HeatingZone_0_CoolSetPoint
+Setpoint item=iComfortS30HeatingZone_0_HeatSetPoint
+Setpoint item=iComfortS30HeatingZone_0_HumiditySetPoint
+Setpoint item=iComfortS30HeatingZone_0_DehumidificationSetPoint
 
 ```
 
